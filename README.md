@@ -67,21 +67,20 @@ public class CoolTestSuite {
 $ docufier --source-path src/test/java --target target/doc
 
 Will yield a file `README.md` in target/doc that looks like this
-`````` .md
-The Cool-Library
-================
 
-### First step
+    The Cool-Library
+    ================
+    
+    ### First step
+    
+    We can easily create a new cool using a "constructor" and get
+    a really cool cool.
+    
+    ~~~ .java
+    Cool cool = new Cool();
+    assertTrue(cool.getTemperature() < 5);         
+    ~~~
 
-We can easily create a new cool using a "constructor" and get
-a really cool cool.
-
-~~~ .java
-Cool cool = new Cool();
-assertTrue(cool.getTemperature() < 5);         
-~~~
-
-``````
 
 Installation
 ------------
