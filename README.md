@@ -1,6 +1,9 @@
 Docufier
 ========
 
+[![Build Status](https://travis-ci.org/programmiersportgruppe/docufier.svg?branch=master)](https://travis-ci.org/programmiersportgruppe/docufier)
+
+
 Docufier is here so fulfil the age old promise that your
 tests can be used as documentation. 
 
