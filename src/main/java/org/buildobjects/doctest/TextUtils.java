@@ -2,24 +2,7 @@ package org.buildobjects.doctest;
 
 import org.apache.commons.lang3.StringUtils;
 
-import java.io.PrintWriter;
-import java.io.Writer;
-
-
-public class DefaultOutputAdapter {
-
-    private final PrintWriter out;
-
-    public DefaultOutputAdapter(Writer writer) {
-        out = new PrintWriter(writer);
-    }
-
-    public void methodBody(String source) {
-        out.println("~~~ .java");
-        out.println(unindent(source).trim());
-        out.println("~~~");
-
-    }
+public class TextUtils {
 
     public static String unindent(String source) {
         String[] lines = source.split("\n");
@@ -38,7 +21,7 @@ public class DefaultOutputAdapter {
             lines[i] = lines[i].substring(minIndent);
         }
 
-        return StringUtils.join(lines, "\n");
+        return org.apache.commons.lang3.StringUtils.join(lines, "\n");
     }
 
     private static int countLeadingSpaces(String s) {
@@ -49,20 +32,8 @@ public class DefaultOutputAdapter {
         return i;
     }
 
-    public void methodPreamble(String comment) {
-        out.println("\n" + unindent(comment) + "\n");
-
-    }
-
-    private String underline(String s, Character underlineCharacter) {
+    public String underline(String s, Character underlineCharacter) {
         return s + "\n" + StringUtils.repeat(underlineCharacter.toString(), s.length());
     }
 
-    public void heading1(String s) {
-        out.println(underline(s, '='));
-    }
-
-    public void testPreamble(String text) {
-        out.println(text.trim());
-    }
 }

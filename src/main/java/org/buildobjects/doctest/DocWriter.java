@@ -8,16 +8,12 @@ import com.thoughtworks.qdox.model.JavaMethod;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.HashSet;
-import java.util.Set;
-
-import static java.util.Arrays.asList;
 
 
 public class DocWriter {
-    private final DefaultOutputAdapter outputAdapter;
+    private final MarkdownWriter outputAdapter;
 
-    public DocWriter(String sourcepath, DefaultOutputAdapter outputAdapter) throws IOException {
+    public DocWriter(String sourcepath, MarkdownWriter outputAdapter) throws IOException {
         this.outputAdapter = outputAdapter;
         JavaDocBuilder builder = new JavaDocBuilder();
         builder.addSourceTree(new File(sourcepath));
@@ -37,7 +33,7 @@ public class DocWriter {
 
             }
         }
-    }                           
+    }
 
     private void processClass(JavaClass aClass) {
         JavaMethod[] methods = aClass.getMethods();
@@ -54,7 +50,7 @@ public class DocWriter {
     private void processTestMethod(JavaMethod method) {
         String comment = method.getComment();
         if (comment != null){
-            outputAdapter.methodPreamble(comment);
+            outputAdapter.paragraph(TextUtils.unindent(comment));
         }
 
         String methodSource = "";
@@ -73,14 +69,14 @@ public class DocWriter {
             methodSource += " }";
         }
 
-        outputAdapter.methodBody(methodSource);
+        outputAdapter.javaCodeBlock(TextUtils.unindent(methodSource));
     }
 
     private boolean hasAnnotation(String name, JavaMethod method) {
         for (Annotation a : method.getAnnotations()){
             if (a.getType().getFullyQualifiedName().endsWith(name)){
                 return true;
-            }  
+            }
 
         }
         return false;
@@ -88,7 +84,7 @@ public class DocWriter {
 
     public static void main(String[] args) throws IOException {
         FileWriter writer = new FileWriter("docs.md");
-        new DocWriter(args[0], new DefaultOutputAdapter(writer));
+        new DocWriter(args[0], new MarkdownWriter(writer));
         writer.close();
 
     }
