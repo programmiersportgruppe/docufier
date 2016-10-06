@@ -5,16 +5,18 @@ import com.thoughtworks.qdox.model.Annotation;
 import com.thoughtworks.qdox.model.JavaClass;
 import com.thoughtworks.qdox.model.JavaMethod;
 
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 
-public class DocWriter {
-    private final MarkdownWriter outputAdapter;
+public class Docufier {
 
-    public DocWriter(String sourcepath, MarkdownWriter outputAdapter) throws IOException {
-        this.outputAdapter = outputAdapter;
+    private static final Pattern CLASS_TAG = Pattern.compile("\\[DOC file=(.+?)\\]");
+
+    private MarkdownWriter markdownWriter;
+
+    public Docufier(String sourcepath) throws IOException {
         JavaDocBuilder builder = new JavaDocBuilder();
         builder.addSourceTree(new File(sourcepath));
 
@@ -27,10 +29,18 @@ public class DocWriter {
         for (int i = 0; i < classes.length; i++) {
             JavaClass aClass = classes[i];
             String comment = aClass.getComment();
-            if(comment != null && comment.contains("[DOC]")){
-                outputAdapter.testPreamble(comment.replace("[DOC]", ""));
-                processClass(aClass);
-
+            if (comment != null) {
+                Matcher matcher = CLASS_TAG.matcher(comment);
+                if (matcher.find()) {
+                    String filename = matcher.group(1);
+                    try (Writer writer = new OutputStreamWriter(new FileOutputStream(filename), "UTF-8")) {
+                        markdownWriter = new MarkdownWriter(writer);
+                        markdownWriter.testPreamble(matcher.replaceAll(""));
+                        processClass(aClass);
+                    } catch (IOException e) {
+                        throw new RuntimeException("Couldn't open output file '" + filename + "'");
+                    }
+                }
             }
         }
     }
@@ -44,13 +54,12 @@ public class DocWriter {
             }
 
         }
-
     }
 
     private void processTestMethod(JavaMethod method) {
         String comment = method.getComment();
         if (comment != null){
-            outputAdapter.paragraph(TextUtils.unindent(comment));
+            markdownWriter.paragraph(TextUtils.unindent(comment));
         }
 
         String methodSource = "";
@@ -69,7 +78,7 @@ public class DocWriter {
             methodSource += " }";
         }
 
-        outputAdapter.javaCodeBlock(TextUtils.unindent(methodSource));
+        markdownWriter.javaCodeBlock(TextUtils.unindent(methodSource));
     }
 
     private boolean hasAnnotation(String name, JavaMethod method) {
@@ -83,10 +92,7 @@ public class DocWriter {
     }
 
     public static void main(String[] args) throws IOException {
-        FileWriter writer = new FileWriter("docs.md");
-        new DocWriter(args[0], new MarkdownWriter(writer));
-        writer.close();
-
+        new Docufier(args[0]);
     }
 
 
