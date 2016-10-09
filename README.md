@@ -64,7 +64,7 @@ public class CoolTestSuite {
 
 2. Run `docufier`
 
-$ docufier --source-path src/test/java --target target/doc
+$ docufier src/test/java target/doc
 
 Will yield a file `README.md` in target/doc that looks like this
 

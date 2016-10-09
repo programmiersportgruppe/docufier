@@ -35,4 +35,20 @@ public class CoolTestSuite {
         assertEquals(oneCool, anotherCool);
     }
 
+    /**
+     * Canonical definition of hotness.
+     */
+    private boolean isHot(int temperature) {
+        return temperature >= 5;
+    }
+
+    /**
+     New cools are not canonically hot.
+     */
+    @Test
+    public void ensureANewCoolIsNotCanonicallyHot() {
+        Cool cool = new Cool();
+        assertTrue(!isHot(cool.getTemperature()));
+    }
+
 }
