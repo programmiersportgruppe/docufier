@@ -13,7 +13,7 @@ expain how to use your code.
 It offers several benefits:
 
 * Share code between documentation and tests.
-* Ensures examples are always syntically and functionally correct.
+* Ensures examples are always syntactically and functionally correct.
 * Helps focusing on the user of the code when writing tests.
 * IDE support for writing documentation examples.
 * Simplifies keeping documentation up-to-date (at least if you are in
