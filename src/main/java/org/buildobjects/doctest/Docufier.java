@@ -16,19 +16,21 @@ import static org.buildobjects.doctest.TextUtils.unindent;
 public class Docufier {
 
     private static final Pattern CLASS_TAG = Pattern.compile("\\[DOC file=(.+?)\\]");
+
     private final File targetDirectory;
 
-    private MarkdownWriter markdownWriter;
-
     public Docufier(String sourcepath, String targetDirectory) throws IOException {
-        this.targetDirectory = new File(targetDirectory);
-        FileUtils.forceMkdir(this.targetDirectory);
+        this(new File(sourcepath), new File(targetDirectory));
+    }
+
+    public Docufier(File sourcepath, File targetDirectory) throws IOException {
+        FileUtils.forceMkdir(targetDirectory);
+        this.targetDirectory = targetDirectory;
 
         JavaDocBuilder builder = new JavaDocBuilder();
-        builder.addSourceTree(new File(sourcepath));
+        builder.addSourceTree(sourcepath);
 
-        JavaClass[] classes = builder.getClasses();
-        processClasses(classes);
+        processClasses(builder.getClasses());
     }
 
     private void processClasses(JavaClass[] classes) {
@@ -39,9 +41,9 @@ public class Docufier {
                 if (matcher.find()) {
                     String filename = matcher.group(1);
                     try (Writer writer = new OutputStreamWriter(new FileOutputStream(new File(targetDirectory, filename)), "UTF-8")) {
-                        markdownWriter = new MarkdownWriter(writer);
+                        MarkdownWriter markdownWriter = new MarkdownWriter(writer);
                         markdownWriter.testPreamble(matcher.replaceAll(""));
-                        processClass(aClass);
+                        processClass(markdownWriter, aClass);
                     } catch (IOException e) {
                         throw new RuntimeException("Couldn't open output file '" + filename + "'");
                     }
@@ -50,13 +52,13 @@ public class Docufier {
         }
     }
 
-    private void processClass(JavaClass aClass) {
+    private void processClass(MarkdownWriter markdownWriter, JavaClass aClass) {
         for (JavaMethod method : aClass.getMethods()) {
-            processTestMethod(method);
+            processTestMethod(markdownWriter, method);
         }
     }
 
-    private void processTestMethod(JavaMethod method) {
+    private void processTestMethod(MarkdownWriter markdownWriter, JavaMethod method) {
         String comment = method.getComment();
 
         if (comment != null && comment.contains("[NO-DOC]"))
