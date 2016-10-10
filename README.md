@@ -4,7 +4,7 @@ Docufier
 [![Build Status](https://travis-ci.org/programmiersportgruppe/docufier.svg?branch=master)](https://travis-ci.org/programmiersportgruppe/docufier)
 
 
-Docufier is here so fulfil the age old promise that your
+Docufier is here to fulfil the age-old promise that your
 tests can be used as documentation. 
 
 It turns doc-commented JUnit test cases into markdown files, that
@@ -23,7 +23,7 @@ the habit of writing tests for features).
 Getting Started
 ---------------
 
-1. Annotate your test case
+### Step 1: Annotate Test Case
 
 ~~~ .java
 /** [DOC file=README.md]     
@@ -62,9 +62,11 @@ public class CoolTestSuite {
 ~~~
 
 
-2. Run `docufier`
+### Step 2: Run `docufier`
 
-$ docufier src/test/java target/doc
+~~~ .java 
+new Docufier("src/test/java", "target/doc");
+~~~
 
 Will yield a file `README.md` in target/doc that looks like this
 
@@ -81,15 +83,64 @@ Will yield a file `README.md` in target/doc that looks like this
     assertTrue(cool.getTemperature() < 5);         
     ~~~
 
+How to run Docufier
+-------------------
 
-Installation
-------------
+Docufier can either be run directly from Java code or as part of a
+maven build using the `docufier-plugin`.
 
-Using this little script you can run docufier directly off the maven repo:
+### Running from Java
 
-~~~~
-set -e 
-mvn some-magic-to-resolve-class-path
+Include docufier as a dependency, e.g. using maven:
 
-java -cp ${resulting_casspath} "$@"
-~~~~
+~~~ .xml
+<dependency>
+    <groupId>org.buildobjects</groupId>
+    <artifactId>docufier</artifactId>
+    <version>0.0.1</version>
+</dependency>
+~~~
+
+Instantiate a new docufier instance, with the (test) source directory and
+the target directory:
+
+~~~ .java 
+new Docufier("src/test/java", "target/doc");
+~~~
+
+### Running as part of your Maven Build
+
+To run docufier in the `generate-resources` phase add the following
+to the pom.xml:
+
+~~~ .xml
+<build>
+    <plugins>
+
+        <plugin>
+            <groupId>org.buildobjects</groupId>
+            <artifactId>docufier-plugin</artifactId>
+            <version>0.0.1</version>
+            <executions>
+                <execution>
+                    <phase>generate-resources</phase>
+                    <goals>
+                        <goal>docufy</goal>
+                    </goals>
+                </execution>
+            </executions>            
+        </plugin>
+    </plugins>
+</build>
+~~~
+
+Per default the plugin tries to read test cases from `src/test/java` and writes to `target/doc`.
+
+These directories can be configured by adding a configuration element to the plugin element:
+ 
+~~~ .xml
+<configuration>
+    <outputDirectory>src/test/java</outputDirectory>
+    <outputDirectory>target/md</outputDirectory>
+</configuration>
+~~~

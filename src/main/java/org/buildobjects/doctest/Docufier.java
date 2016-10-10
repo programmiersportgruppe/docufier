@@ -93,6 +93,4 @@ public class Docufier {
     public static void main(String[] args) throws IOException {
         new Docufier(args[0], args[1]);
     }
-
-
 }
