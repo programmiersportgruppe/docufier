@@ -65,24 +65,20 @@ public class Docufier {
         if (comment != null)
             markdownWriter.paragraph(unindent(comment));
 
-        boolean isHelperMethod = !hasAnnotation("Test", method);
-
         String methodSource;
-        if (isHelperMethod) {
-            String declarationSignature =
-                method.getDeclarationSignature(false)
-                    .replaceAll("\\w*\\.",""); // simpleName!
-            methodSource = declarationSignature + " {" + TextUtils.reindent(method.getSourceCode(), "    ") + "}";
-        } else {
+        if (hasAnnotation("Test", method)) {
             methodSource = unindent(method.getSourceCode());
+        } else {
+            String simplifiedDeclaration = method.getDeclarationSignature(false).replaceAll("\\w*\\.", "");
+            methodSource = simplifiedDeclaration + " {" + TextUtils.reindent(method.getSourceCode(), "    ") + "}";
         }
 
         markdownWriter.javaCodeBlock(methodSource);
     }
 
     private boolean hasAnnotation(String name, JavaMethod method) {
-        for (Annotation a : method.getAnnotations()){
-            if (a.getType().getFullyQualifiedName().endsWith(name)){
+        for (Annotation a : method.getAnnotations()) {
+            if (a.getType().getFullyQualifiedName().endsWith(name)) {
                 return true;
             }
 
@@ -93,4 +89,5 @@ public class Docufier {
     public static void main(String[] args) throws IOException {
         new Docufier(args[0], args[1]);
     }
+
 }

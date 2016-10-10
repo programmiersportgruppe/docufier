@@ -11,31 +11,24 @@ public class TextUtils {
 
     public static String reindent(String source, String prefix) {
         String[] lines = source.split("\n");
+
         int minIndent = Integer.MAX_VALUE;
-        for (int i = 0; i < lines.length; i++) {
-            String line = lines[i];
-
-            if (line.trim().length() < 1) {
-                lines[i] = "";
-                continue;
-            }
-
-            int c = countLeadingSpaces(line);
-            if (c < minIndent){
-                minIndent = c;
-            }
-        }
-        for (int i = 0; i < lines.length; i++) {
-            if (lines[i].length() > minIndent)
-                lines[i] = prefix + lines[i].substring(minIndent);
+        for (String line : lines) {
+            final int lineIndent = countLeadingSpaces(line);
+            if (lineIndent < line.length() && lineIndent < minIndent)
+                minIndent = lineIndent;
         }
 
-        return org.apache.commons.lang3.StringUtils.join(lines, "\n");
+        for (int i = 0; i < lines.length; i++) {
+            lines[i] = lines[i].length() <= minIndent ? "" : prefix + lines[i].substring(minIndent);
+        }
+
+        return StringUtils.join(lines, "\n");
     }
 
     private static int countLeadingSpaces(String s) {
         int i = 0;
-        while (i < s.length() && s.charAt(i) == ' '){
+        while (i < s.length() && s.charAt(i) == ' ') {
             i++;
         }
         return i;

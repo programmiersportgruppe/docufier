@@ -43,9 +43,9 @@ public class CoolTestSuite {
     @Test
     public void ensureANewCoolIsNotHot() {
         Cool cool = new Cool();
-        assertTrue(cool.getTemperature() < 5);         
+        assertTrue(cool.getTemperature() < 5);
     }
-    
+
     /**
     [NO-DOC]
     Sometimes we write a test that is not really instructional.
@@ -54,17 +54,17 @@ public class CoolTestSuite {
     public void ensureEqualityWorks() {
         Cool oneCool = new Cool();
         Cool anotherCool = new Cool();
-        
-        assertEquals(oneCool, anotherCool);         
+
+        assertEquals(oneCool, anotherCool);
     }
-       
+
 }
 ~~~
 
 
 ### Step 2: Run `docufier`
 
-~~~ .java 
+~~~ .java
 new Docufier("src/test/java", "target/doc");
 ~~~
 
@@ -104,7 +104,7 @@ Include docufier as a dependency, e.g. using maven:
 Instantiate a new docufier instance, with the (test) source directory and
 the target directory:
 
-~~~ .java 
+~~~ .java
 new Docufier("src/test/java", "target/doc");
 ~~~
 
@@ -128,7 +128,7 @@ to the pom.xml:
                         <goal>docufy</goal>
                     </goals>
                 </execution>
-            </executions>            
+            </executions>
         </plugin>
     </plugins>
 </build>
