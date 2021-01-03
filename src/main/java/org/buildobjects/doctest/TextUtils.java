@@ -1,6 +1,15 @@
 package org.buildobjects.doctest;
 
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
+
+import java.io.File;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.util.function.Function;
+
+import static java.nio.charset.StandardCharsets.UTF_8;
 
 public class TextUtils {
 
@@ -37,5 +46,7 @@ public class TextUtils {
     public String underline(String s, Character underlineCharacter) {
         return s + "\n" + StringUtils.repeat(underlineCharacter.toString(), s.length());
     }
+
+
 
 }

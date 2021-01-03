@@ -1,15 +1,25 @@
 package org.buildobjects.doctest.guineapig;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.buildobjects.doctest.runtime.junit4.DocufierRule;
+import org.junit.Rule;
 import org.junit.Test;
 
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.junit.Assert.*;
 
-/** [DOC file=README.md]
- The Cool-Library
- ================
+/**
+ * [DOC file=README.md]
+ * The Cool-Library
+ * ================
  */
-
 public class CoolTestSuite {
+
+    @Rule
+    public DocufierRule docufy = new DocufierRule();
 
     /**
      ### First step
@@ -24,8 +34,8 @@ public class CoolTestSuite {
     }
 
     /**
-     [NO-DOC]
-     Sometimes we write a test that is not really instructional.
+     * [NO-DOC]
+     * Sometimes we write a test that is not really instructional.
      */
     @Test
     public void ensureEqualityWorks() {
@@ -43,12 +53,37 @@ public class CoolTestSuite {
     }
 
     /**
-     New cools are not canonically hot.
+     * New cools are not canonically hot.
      */
     @Test
     public void ensureANewCoolIsNotCanonicallyHot() {
         Cool cool = new Cool();
         assertTrue(!isHot(cool.getTemperature()));
+    }
+
+    /**
+     * We also want to be able to format some json:
+     */
+    @Test
+    public void ensureWeCanPrettyPrintSomeOutput() {
+
+        String someJson = docufy.tap("{\n" +
+            "  \"name\": \"dagobert\",\n" +
+            "  \"nephews\": [\"tick\", \"trick\", \"track\"]\n" +
+            "}", this::prettyJson);
+
+        String anotherJson = docufy.tap("[\"A\", \"B\", \"C\"]", this::prettyJson);
+    }
+
+    /** [NO-DOC] */
+    private String prettyJson(String t) {
+        try {
+            return new ObjectMapper()
+                .readTree(new ByteArrayInputStream(t.getBytes(UTF_8)))
+                .toPrettyString();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
 }
