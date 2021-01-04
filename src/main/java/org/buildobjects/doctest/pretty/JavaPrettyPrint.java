@@ -86,7 +86,7 @@ public class JavaPrettyPrint {
 
         String raw = unindent(stripOuterCurlies(out.getBuffer().toString()));
         for (int i = 0; i < tokenCount; i++) {
-            raw = raw.replace(magicToken(i), replacements.get(i).getReplacement());
+            raw = raw.replace(magicToken(i), "«" + replacements.get(i).getReplacement() + "»");
         }
 
         return raw;

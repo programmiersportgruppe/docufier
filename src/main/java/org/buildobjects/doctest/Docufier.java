@@ -146,7 +146,7 @@ public class Docufier {
 
                 final File path = new File("target/docufier-snippets/" + fileName);
                 try {
-                    replacements.add(new Replacement(n.getTokenRange().get(), "«" + FileUtils.readFileToString(path, StandardCharsets.UTF_8) + "»"));
+                    replacements.add(new Replacement(n.getTokenRange().get(), FileUtils.readFileToString(path, StandardCharsets.UTF_8)));
                 } catch (IOException e) {
                     replacements.add(new Replacement(n.getTokenRange().get(), "Failed to read replacement from '" + path.getAbsolutePath() + "'"));
                 }
