@@ -151,6 +151,7 @@ public class Docufier {
                     replacements.add(new Replacement(n.getTokenRange().get(), "Failed to read replacement from '" + path.getAbsolutePath() + "'"));
                 }
             }
+            super.visit(n, arg);
         }
 
 
