@@ -2,6 +2,7 @@ Docufier
 ========
 
 [![Build Status](https://travis-ci.org/programmiersportgruppe/docufier.svg?branch=master)](https://travis-ci.org/programmiersportgruppe/docufier)
+[![Maven Central](https://img.shields.io/maven-central/v/org.buildobjects/docufier.svg?maxAge=2592000)](https://mvnrepository.com/artifact/org.buildobjects/docufier)
 
 
 Docufier is here to fulfil the age-old promise that your
