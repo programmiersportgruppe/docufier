@@ -6,9 +6,12 @@ import com.github.javaparser.ast.Node;
 import org.buildobjects.doctest.Replacement;
 
 import java.io.StringWriter;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import static org.buildobjects.doctest.TextUtils.unindent;
 
 public class JavaPrettyPrint {
 
@@ -28,39 +31,68 @@ public class JavaPrettyPrint {
         this.replacements = replacements;
     }
 
+
+    private String stripOuterCurlies(String unindent) {
+
+        if (unindent.startsWith("{\n")) {
+            unindent = unindent.substring(2);
+        }
+        if (unindent.endsWith("}")) {
+            unindent = unindent.substring(0, unindent.length() - 1);
+        }
+        return unindent;
+    }
+
+
     public String highlight(Node node) {
+        List<Replacement> localReplacements = new ArrayList<>(replacements);
+        int tokenCount = 0;
+
         Boolean currentlySkipping = false;
+
         StringWriter out = new StringWriter();
         TokenRange tokens = node.getTokenRange().get();
 
 
         for (JavaToken token : tokens) {
-            if (!replacements.isEmpty() && !currentlySkipping) {
-                if (replacements.get(0).getTokenRange().getBegin() == token) {
-                    out.write(replacements.get(0).getReplacement());
+            final JavaToken.Kind tokenKind = JavaToken.Kind.valueOf(token.getKind());
+            if (!localReplacements.isEmpty() && !currentlySkipping) {
+                if (localReplacements.get(0).getTokenRange().getBegin() == token) {
+                    out.write(magicToken(tokenCount));
+                    tokenCount ++;
                     currentlySkipping = true;
                     continue;
                 }
             }
+
             if (currentlySkipping) {
-                if (replacements.get(0).getTokenRange().getEnd() == token) {
+                if (localReplacements.get(0).getTokenRange().getEnd() == token) {
                     currentlySkipping = false;
-                    replacements.remove(0);
+                    localReplacements.remove(0);
                     continue;
                 }
                 continue;
             }
 
-            if (kindStyleMapping.containsKey(JavaToken.Kind.valueOf(token.getKind()))) {
-                out.write(new SpanBuilder(token.asString()).withStyle(kindStyleMapping.get(JavaToken.Kind.valueOf(token.getKind()))).build());
-            }
-            if (categoryStyleMapping.containsKey(token.getCategory())) {
+            if (kindStyleMapping.containsKey(tokenKind)) {
+                out.write(new SpanBuilder(token.asString()).withStyle(kindStyleMapping.get(tokenKind)).build());
+            } else if (categoryStyleMapping.containsKey(token.getCategory())) {
                 out.write(new SpanBuilder(token.asString()).withStyle(categoryStyleMapping.get(token.getCategory())).build());
 
             } else {
-                out.write(token.asString());
+                out.write(token.getText());
             }
         }
-        return out.getBuffer().toString();
+
+        String raw = unindent(stripOuterCurlies(out.getBuffer().toString()));
+        for (int i = 0; i < tokenCount; i++) {
+            raw = raw.replace(magicToken(i), replacements.get(i).getReplacement());
+        }
+
+        return raw;
+    }
+
+    private String magicToken(int tokenCount) {
+        return "__TOKEN__" + tokenCount;
     }
 }

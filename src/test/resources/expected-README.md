@@ -34,5 +34,8 @@ String someJson = «{
   "nephews" : [ "tick", "trick", "track" ]
 }»;
 
-String anotherJson = «[ "A", "B", "C" ]»;
+String anotherJson = StringUtils.trim(«[ "A", "B", "C" ]»);
+
+<span style="color:gray">// Or a comment?</span>
+assertNotEquals(someJson, anotherJson);
 </pre>

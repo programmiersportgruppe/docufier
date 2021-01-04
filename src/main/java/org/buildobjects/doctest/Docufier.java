@@ -1,5 +1,6 @@
 package org.buildobjects.doctest;
 
+import com.github.javaparser.ParserConfiguration;
 import com.github.javaparser.StaticJavaParser;
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.Node;
@@ -25,7 +26,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-import static org.buildobjects.doctest.TextUtils.unindent;
+import static org.buildobjects.doctest.TextUtils.*;
 
 
 public class Docufier {
@@ -46,6 +47,10 @@ public class Docufier {
 
         JavaDocBuilder builder = new JavaDocBuilder();
         builder.addSourceTree(sourcepath);
+
+        StaticJavaParser.setConfiguration(new ParserConfiguration()
+            .setLexicalPreservationEnabled(true)
+        );
 
         processClasses(builder.getClasses());
     }
@@ -100,14 +105,8 @@ public class Docufier {
             final BlockStmt blockStmt = parsedMethod.getBody().get();
 
             final JavaPrettyPrint javaPrettyPrint = new JavaPrettyPrint(visitor.getReplacements());
-            methodSource = unindent(blockStmt
-                .getStatements()
-                .stream()
-                .map(node -> {
-                    return javaPrettyPrint.highlight(node);
-                })
-                .collect(Collectors.joining("\n"))
-            );
+
+            methodSource = javaPrettyPrint.highlight(blockStmt);
         } else {
             String simplifiedDeclaration = method.getDeclarationSignature(false).replaceAll("\\w*\\.", "");
             methodSource = simplifiedDeclaration + " {" + TextUtils.reindent(method.getSourceCode(), "    ") + "}";
@@ -122,6 +121,8 @@ public class Docufier {
         markdownWriter.javaCodeBlock(methodSource);
     }
 
+
+
     private class ExpressionVisitor extends VoidVisitorAdapter<Void> {
 
         private List<Replacement> replacements = new ArrayList<>();
@@ -132,7 +133,6 @@ public class Docufier {
         @Override
         public void visit(MethodCallExpr n, Void arg) {
             if (n.getName().getIdentifier().equals("tap")) {
-
                 MethodDeclaration method = getParent(n, MethodDeclaration.class);
 
                 ClassOrInterfaceDeclaration clazz = getParent(n, ClassOrInterfaceDeclaration.class);

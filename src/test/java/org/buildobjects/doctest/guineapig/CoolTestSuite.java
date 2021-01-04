@@ -1,6 +1,7 @@
 package org.buildobjects.doctest.guineapig;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.apache.commons.lang3.StringUtils;
 import org.buildobjects.doctest.runtime.junit4.DocufierRule;
 import org.junit.Rule;
 import org.junit.Test;
@@ -66,13 +67,15 @@ public class CoolTestSuite {
      */
     @Test
     public void ensureWeCanPrettyPrintSomeOutput() {
-
         String someJson = docufy.tap("{\n" +
             "  \"name\": \"dagobert\",\n" +
             "  \"nephews\": [\"tick\", \"trick\", \"track\"]\n" +
             "}", this::prettyJson);
 
-        String anotherJson = docufy.tap("[\"A\", \"B\", \"C\"]", this::prettyJson);
+        String anotherJson = StringUtils.trim(docufy.tap("[\"A\", \"B\", \"C\"]", this::prettyJson));
+
+        // Or a comment?
+        assertNotEquals(someJson, anotherJson);
     }
 
     /** [NO-DOC] */
