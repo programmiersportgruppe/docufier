@@ -25,6 +25,7 @@ fi >&2
 find . -name target -prune -exec rm -r {} \;
 
 ./build.sh
+mvn package javadoc:jar source:jar
 
 mv target/$JAR_NAME-VERSION.jar target/$JAR_NAME-${version}.jar
 mv target/$JAR_NAME-VERSION-sources.jar target/$JAR_NAME-${version}-sources.jar
