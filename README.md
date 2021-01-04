@@ -98,7 +98,7 @@ Include docufier as a dependency, e.g. using maven:
 <dependency>
     <groupId>org.buildobjects</groupId>
     <artifactId>docufier</artifactId>
-    <version>0.1.0</version>
+    <version>0.1.2</version>
 </dependency>
 ~~~
 
@@ -121,7 +121,7 @@ to the pom.xml:
         <plugin>
             <groupId>org.buildobjects</groupId>
             <artifactId>docufier-plugin</artifactId>
-            <version>0.1.0</version>
+            <version>0.1.2</version>
             <executions>
                 <execution>
                     <phase>generate-resources</phase>
