@@ -17,8 +17,8 @@ public class MarkdownWriter implements AutoCloseable {
     }
 
     public void javaCodeBlock(String source) {
-        out.println("<pre><code>");
-        out.println(source.trim());
+        out.print("<pre><code>");
+        out.print(source.trim());
         out.println("</code></pre>");
     }
 
